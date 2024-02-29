@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from removebg.models import Person
 from removebg.serializers import PersonSerializaer, ImageSerializer
+from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET','POST'])
 def index(request):
@@ -61,9 +62,12 @@ def person(request):
 #         else:
 #             return Response(serializer.errors, status=400)
 
+@csrf_exempt
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 def remove_background(request):
+    # Log request headers
+    print(request.headers)
     if request.method == 'POST' and request.FILES.get('image'):
         serializer = ImageSerializer(data=request.data)
         if serializer.is_valid():
